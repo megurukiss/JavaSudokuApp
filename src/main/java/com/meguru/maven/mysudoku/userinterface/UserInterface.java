@@ -6,6 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.Background;
 import javafx.scene.shape.Rectangle;
@@ -24,6 +25,7 @@ public class UserInterface implements InterfaceContract.View{
     private final Group root;
     private HashMap<Coordinate, SudokuTextField> textFieldCoordinates;
     private KeyEventHandler handler;
+    private ButtonHandler buttonHandler;
 
     private static final double WINDOW_Y = 732;
     private static final double WINDOW_X = 668;
@@ -38,6 +40,7 @@ public class UserInterface implements InterfaceContract.View{
         this.root = new Group();
         this.textFieldCoordinates = new HashMap<>();
         this.handler = new KeyEventHandler(this);
+        this.buttonHandler = new ButtonHandler(this);
         initializeUserInterface();
     }
 
@@ -48,6 +51,7 @@ public class UserInterface implements InterfaceContract.View{
         drawTextField(root);
         drawGridLines(root);
         drawBorders(root);
+        drawButtons(root);
         stage.show();
     }
 
@@ -140,12 +144,39 @@ public class UserInterface implements InterfaceContract.View{
         return line;
     }
 
+    private void drawButtons(Group root){
+        // draw save button
+        Button save = new Button("Save");
+        save.setLayoutX(50);
+        save.setLayoutY(650);
+        save.setPrefSize(100, 50);
+        save.setOnMouseClicked(e -> buttonHandler.handle(e));
+        root.getChildren().add(save);
+
+        // draw load button
+        Button load = new Button("Load");
+        load.setLayoutX(525);
+        load.setLayoutY(650);
+        load.setPrefSize(100, 50);
+        load.setOnMouseClicked(e -> buttonHandler.handle(e));
+        root.getChildren().add(load);
+    }
+
+    public SudokuGame getGameFromBoard(){
+        int[][] board = getBoard();
+        return new SudokuGame(GameState.ACTIVE, board);
+    }
+
     @Override
     public int[][] getBoard(){
         int[][] board = new int[9][9];
         for(int i=0;i<9;i++){
             for(int j=0;j<9;j++){
                 SudokuTextField tile = textFieldCoordinates.get(new Coordinate(i,j));
+                if(tile==null){
+                    board[i][j]=0;
+                    continue;
+                }
                 try{
                     board[i][j] = Integer.parseInt(tile.getText());
                 }catch (NumberFormatException e){

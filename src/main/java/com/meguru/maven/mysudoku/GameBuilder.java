@@ -7,7 +7,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import com.meguru.maven.mysudoku.userinterface.UserInterface;
 
-public class GroupExample extends Application {
+public class GameBuilder extends Application {
     @Override
     public void start(Stage primaryStage) {
         UserInterface ui = new UserInterface(primaryStage);
